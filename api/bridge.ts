@@ -3,33 +3,35 @@ import cors from 'cors';
 import serverless from 'serverless-http';
 import { Request, Response } from 'express';
 import path from 'path';
+import { fileURLToPath } from 'url';
 
+// Import from compiled dist directory
 import {
   startIntakeSession,
   processIntakeResponse,
   getIntakeProgress,
   getIntakeSummary,
-} from '../src/services/intake.js';
+} from '../dist/services/intake.js';
 import {
   generateDocumentChecklist,
   getDocumentChecklist,
   markDocumentCollected,
   getPendingDocuments,
   formatChecklistForDisplay,
-} from '../src/services/checklist.js';
+} from '../dist/services/checklist.js';
 import {
   createDocumentReminder,
   getClientReminders,
   sendReminder,
   formatRemindersForDisplay,
-} from '../src/services/reminders.js';
+} from '../dist/services/reminders.js';
 import {
   routeClientToTaxPro,
   createAppointment,
   getAppointmentEstimate,
   getTaxProRecommendations,
-} from '../src/services/routing.js';
-import { db } from '../src/database/index.js';
+} from '../dist/services/routing.js';
+import { db } from '../dist/database/index.js';
 
 const app = express();
 app.use(cors({ origin: true }));
