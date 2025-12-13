@@ -1,0 +1,99 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Tax Intake MCP Bridge Tester</title>
+    <style>
+      body { font-family: system-ui, Arial, sans-serif; margin: 2rem; }
+      textarea, input { width: 100%; }
+      pre { background: #f6f8fa; padding: 1rem; white-space: pre-wrap; }
+      .row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+      button { padding: 0.5rem 1rem; }
+    </style>
+  </head>
+  <body>
+    <h1>Tax Intake MCP Bridge Tester</h1>
+
+    <section>
+      <h2>Health</h2>
+      <button id="btnHealth">Check /health</button>
+      <pre id="outHealth"></pre>
+    </section>
+
+    <section>
+      <h2>Start Intake</h2>
+      <button id="btnStart">Start</button>
+      <pre id="outStart"></pre>
+    </section>
+
+    <section>
+      <h2>Respond</h2>
+      <div class="row">
+        <div>
+          <label>Session ID</label>
+          <input id="sessionId" />
+        </div>
+        <div>
+          <label>Answer</label>
+          <input id="answer" />
+        </div>
+      </div>
+      <button id="btnRespond">Send Response</button>
+      <pre id="outRespond"></pre>
+    </section>
+
+    <section>
+      <h2>Checklist</h2>
+      <div class="row">
+        <div>
+          <label>Client ID</label>
+          <input id="clientId" />
+        </div>
+      </div>
+      <button id="btnGenChecklist">Generate</button>
+      <pre id="outChecklist"></pre>
+    </section>
+
+    <section>
+      <h2>SSE</h2>
+      <button id="btnSse">Connect /sse</button>
+      <pre id="outSse"></pre>
+    </section>
+
+    <script>
+      const $ = (id) => document.getElementById(id);
+      const base = '';
+
+      $('btnHealth').onclick = async () => {
+        const r = await fetch(base + '/health');
+        $('outHealth').textContent = await r.text();
+      };
+
+      $('btnStart').onclick = async () => {
+        const r = await fetch(base + '/intake/start', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
+        const j = await r.json();
+        $('outStart').textContent = JSON.stringify(j, null, 2);
+        $('sessionId').value = j.sessionId;
+        $('clientId').value = j.clientId;
+      };
+
+      $('btnRespond').onclick = async () => {
+        const r = await fetch(base + '/intake/respond', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sessionId: $('sessionId').value, answer: $('answer').value }) });
+        $('outRespond').textContent = JSON.stringify(await r.json(), null, 2);
+      };
+
+      $('btnGenChecklist').onclick = async () => {
+        const r = await fetch(base + `/client/${$('clientId').value}/checklist/generate`, { method: 'POST' });
+        $('outChecklist').textContent = await r.text();
+      };
+
+      $('btnSse').onclick = async () => {
+        const out = $('outSse');
+        const es = new EventSource(base + '/sse');
+        es.addEventListener('ready', (e) => { out.textContent += `READY: ${e.data}\n`; });
+        es.addEventListener('ping', (e) => { out.textContent += `PING: ${e.data}\n`; });
+        es.onerror = (e) => { out.textContent += `ERROR\n`; };
+      };
+    </script>
+  </body>
+</html>

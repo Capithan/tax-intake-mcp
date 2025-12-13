@@ -1,0 +1,36 @@
+{
+  "name": "tax-intake-mcp-server",
+  "version": "1.0.0",
+  "description": "MCP Server for Tax Client Intake & Appointment Optimization",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsx src/index.ts",
+    "bridge": "tsx src/bridge/server.ts",
+    "start:bridge": "node dist/bridge/server.js",
+    "watch": "tsc --watch"
+  },
+  "keywords": [
+    "mcp",
+    "tax",
+    "intake",
+    "chatgpt",
+    "appointment"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "express": "^4.19.2",
+    "cors": "^2.8.5"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@types/express": "^4.17.21",
+    "@types/cors": "^2.8.17",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.0"
+  }
+}
