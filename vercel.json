@@ -1,12 +1,7 @@
 {
   "version": 2,
-  "buildCommand": "npm run build",
-  "builds": [
-    { "src": "api/sse.ts", "use": "@vercel/edge" },
-    { "src": "api/bridge.ts", "use": "@vercel/node" }
-  ],
   "routes": [
-    { "src": "^/sse$", "dest": "/api/sse", "continue": false },
+    { "src": "^/sse$", "dest": "/api/bridge", "continue": false },
     { "src": "^/health$", "dest": "/api/bridge", "continue": false },
     { "src": "^/client/.*", "dest": "/api/bridge", "continue": false },
     { "src": "^/intake/.*", "dest": "/api/bridge", "continue": false },
