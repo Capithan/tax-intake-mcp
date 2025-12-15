@@ -191,17 +191,10 @@ app.get('/sse', (req: Request, res: Response) => {
   res.write(`data: {"service":"tax-intake-mcp-bridge-vercel"}\n\n`);
 });
 
-// Serve static files AFTER all API routes
-const publicDir = path.join(__dirname, '..', 'public');
-try {
-  app.use(express.static(publicDir));
-} catch (e) {
-  console.log('Static file serving not available');
-}
-
-// Serve index.html on root as fallback
+// Serve index.html on root only
 app.get('/', (_req, res) => {
   try {
+    const publicDir = path.join(__dirname, '..', 'public');
     const indexPath = path.join(publicDir, 'index.html');
     const html = fs.readFileSync(indexPath, 'utf-8');
     res.type('text/html').send(html);
