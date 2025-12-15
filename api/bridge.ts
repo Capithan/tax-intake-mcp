@@ -1,9 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import serverless from 'serverless-http';
 import { Request, Response } from 'express';
-import path from 'path';
-import { fileURLToPath } from 'url';
 
 // Import from compiled dist directory
 import {
@@ -172,4 +169,4 @@ app.get('/sse', (req: Request, res: Response) => {
   res.write(`data: {"service":"tax-intake-mcp-bridge-vercel"}\n\n`);
 });
 
-export default serverless(app);
+export default app;
