@@ -174,7 +174,8 @@ app.get('/sse', (req: Request, res: Response) => {
   res.write(`data: {"service":"tax-intake-mcp-bridge"}\n\n`);
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
-  console.log(`HTTP Bridge running on http://localhost:${PORT}`);
+  console.log(`Tax Intake UI & HTTP Bridge running on http://localhost:${PORT}`);
+  console.log(`Open your browser to: http://localhost:${PORT}`);
 });

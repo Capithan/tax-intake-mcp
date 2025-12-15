@@ -1,99 +1,480 @@
-<!doctype html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <title>Tax Intake MCP Bridge Tester</title>
-    <style>
-      body { font-family: system-ui, Arial, sans-serif; margin: 2rem; }
-      textarea, input { width: 100%; }
-      pre { background: #f6f8fa; padding: 1rem; white-space: pre-wrap; }
-      .row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-      button { padding: 0.5rem 1rem; }
-    </style>
-  </head>
-  <body>
-    <h1>Tax Intake MCP Bridge Tester</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tax Client Intake & Appointment Optimizer</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 2rem;
+    }
 
-    <section>
-      <h2>Health</h2>
-      <button id="btnHealth">Check /health</button>
-      <pre id="outHealth"></pre>
-    </section>
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      overflow: hidden;
+    }
 
-    <section>
-      <h2>Start Intake</h2>
-      <button id="btnStart">Start</button>
-      <pre id="outStart"></pre>
-    </section>
+    header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 3rem 2rem;
+      text-align: center;
+    }
 
-    <section>
-      <h2>Respond</h2>
-      <div class="row">
-        <div>
-          <label>Session ID</label>
-          <input id="sessionId" />
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      opacity: 0.9;
+    }
+
+    main {
+      padding: 2rem;
+    }
+
+    .content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .card {
+      background: #f8f9fa;
+      border: 1px solid #e9ecef;
+      border-radius: 8px;
+      padding: 1.5rem;
+    }
+
+    .card h2 {
+      font-size: 1.3rem;
+      margin-bottom: 1rem;
+      color: #667eea;
+      border-bottom: 2px solid #667eea;
+      padding-bottom: 0.5rem;
+    }
+
+    .card h3 {
+      font-size: 0.95rem;
+      color: #666;
+      margin-top: 1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 0.75rem;
+      margin-bottom: 0.5rem;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 0.95rem;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    button {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 4px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      width: 100%;
+      margin-top: 0.5rem;
+    }
+
+    button:hover {
+      background: #5568d3;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    button.secondary {
+      background: #6c757d;
+    }
+
+    button.secondary:hover {
+      background: #5a6268;
+    }
+
+    .output {
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 1rem;
+      margin-top: 1rem;
+      max-height: 300px;
+      overflow-y: auto;
+      font-size: 0.85rem;
+      font-family: 'Monaco', 'Courier New', monospace;
+      color: #333;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .output.empty {
+      color: #999;
+      font-style: italic;
+    }
+
+    .status {
+      padding: 1rem;
+      border-radius: 4px;
+      margin: 1rem 0;
+      display: none;
+    }
+
+    .status.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+      display: block;
+    }
+
+    .status.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+      display: block;
+    }
+
+    .workflow {
+      background: white;
+      padding: 2rem;
+      border-radius: 8px;
+      margin-top: 2rem;
+    }
+
+    .workflow h2 {
+      font-size: 1.3rem;
+      margin-bottom: 1.5rem;
+      color: #667eea;
+      border-bottom: 2px solid #667eea;
+      padding-bottom: 0.5rem;
+    }
+
+    .workflow-step {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .step-card {
+      background: #f8f9fa;
+      padding: 1rem;
+      border-radius: 6px;
+      border-left: 4px solid #667eea;
+      text-align: center;
+    }
+
+    .step-number {
+      font-weight: bold;
+      color: #667eea;
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .step-name {
+      font-size: 0.9rem;
+      color: #666;
+    }
+
+    .full-width {
+      grid-column: 1 / -1;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .icon {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    footer {
+      background: #f8f9fa;
+      padding: 1.5rem;
+      text-align: center;
+      color: #666;
+      border-top: 1px solid #e9ecef;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>💼 Tax Intake & Appointment Optimizer</h1>
+      <p class="subtitle">AI-powered client preparation system - Works standalone or with ChatGPT</p>
+    </header>
+
+    <main>
+      <div class="content">
+        <!-- Intake Section -->
+        <div class="card">
+          <h2>📋 Client Intake</h2>
+          <p style="margin-bottom: 1rem; color: #666;">Start a new intake session or respond to questions.</p>
+          
+          <button id="btnStart" class="primary">Start New Intake</button>
+          
+          <div id="intakeStatus" class="status"></div>
+          <div id="outStart" class="output empty">Intake started data will appear here...</div>
+          
+          <h3>Continue Session</h3>
+          <input type="text" id="sessionId" placeholder="Session ID (auto-filled after start)">
+          <textarea id="answer" placeholder="Enter your response to the current question..." rows="3"></textarea>
+          <button id="btnRespond">Send Response</button>
+          <div id="outRespond" class="output empty">Response will appear here...</div>
         </div>
-        <div>
-          <label>Answer</label>
-          <input id="answer" />
+
+        <!-- Checklist Section -->
+        <div class="card">
+          <h2>📝 Document Checklist</h2>
+          <p style="margin-bottom: 1rem; color: #666;">Generate personalized document requirements.</p>
+          
+          <input type="text" id="clientId" placeholder="Client ID (auto-filled after intake start)">
+          <button id="btnGenChecklist">Generate Checklist</button>
+          
+          <div id="checklistStatus" class="status"></div>
+          <div id="outChecklist" class="output empty">Checklist will appear here...</div>
+        </div>
+
+        <!-- Routing Section -->
+        <div class="card">
+          <h2>🎯 Tax Pro Routing</h2>
+          <p style="margin-bottom: 1rem; color: #666;">Get matched with the best tax professional.</p>
+          
+          <button id="btnRoute">Route Client</button>
+          
+          <div id="routeStatus" class="status"></div>
+          <div id="outRoute" class="output empty">Routing recommendation will appear here...</div>
+        </div>
+
+        <!-- Reminders Section -->
+        <div class="card">
+          <h2>🔔 Appointment Reminders</h2>
+          <p style="margin-bottom: 1rem; color: #666;">Create personalized reminders for documents and appointments.</p>
+          
+          <input type="text" id="appointmentId" placeholder="Appointment ID (optional)">
+          <button id="btnReminders">Create Reminders</button>
+          
+          <div id="remindersStatus" class="status"></div>
+          <div id="outReminders" class="output empty">Reminders will appear here...</div>
+        </div>
+
+        <!-- Health Check Section -->
+        <div class="card">
+          <h2>🏥 System Health</h2>
+          <p style="margin-bottom: 1rem; color: #666;">Check service status and connectivity.</p>
+          
+          <button id="btnHealth">Check Health</button>
+          <div id="outHealth" class="output empty">Health status will appear here...</div>
+        </div>
+
+        <!-- SSE Connection Section -->
+        <div class="card">
+          <h2>🔌 Live Streaming</h2>
+          <p style="margin-bottom: 1rem; color: #666;">Connect to real-time SSE updates.</p>
+          
+          <button id="btnSse">Connect to SSE</button>
+          <button id="btnStopSse" class="secondary" style="display:none;">Stop SSE</button>
+          <div id="outSse" class="output empty">SSE events will appear here...</div>
         </div>
       </div>
-      <button id="btnRespond">Send Response</button>
-      <pre id="outRespond"></pre>
-    </section>
 
-    <section>
-      <h2>Checklist</h2>
-      <div class="row">
-        <div>
-          <label>Client ID</label>
-          <input id="clientId" />
+      <!-- Workflow Overview -->
+      <div class="workflow">
+        <h2>📊 Complete Workflow</h2>
+        <div class="workflow-step">
+          <div class="step-card">
+            <div class="icon">1️⃣</div>
+            <div class="step-number">Start</div>
+            <div class="step-name">Begin intake</div>
+          </div>
+          <div class="step-card">
+            <div class="icon">2️⃣</div>
+            <div class="step-number">Respond</div>
+            <div class="step-name">Answer questions</div>
+          </div>
+          <div class="step-card">
+            <div class="icon">3️⃣</div>
+            <div class="step-number">Checklist</div>
+            <div class="step-name">Generate docs</div>
+          </div>
+          <div class="step-card">
+            <div class="icon">4️⃣</div>
+            <div class="step-number">Route</div>
+            <div class="step-name">Find tax pro</div>
+          </div>
         </div>
       </div>
-      <button id="btnGenChecklist">Generate</button>
-      <pre id="outChecklist"></pre>
-    </section>
+    </main>
 
-    <section>
-      <h2>SSE</h2>
-      <button id="btnSse">Connect /sse</button>
-      <pre id="outSse"></pre>
-    </section>
+    <footer>
+      <p>Tax Intake MCP Server • Standalone App + ChatGPT Integration</p>
+      <p style="font-size: 0.9rem; margin-top: 0.5rem;">Base URL: <code id="baseUrl" style="background:#f0f0f0;padding:0.2rem 0.4rem;border-radius:3px;">http://localhost:3000</code></p>
+    </footer>
+  </div>
 
-    <script>
-      const $ = (id) => document.getElementById(id);
-      const base = '';
+  <script>
+    const base = '';
+    const $ = (id) => document.getElementById(id);
+    const show = (id, msg, type = 'success') => {
+      const el = $(id);
+      el.textContent = msg;
+      el.className = 'status ' + type;
+    };
+    const output = (id, data) => {
+      const el = $(id);
+      if (typeof data === 'string') {
+        el.textContent = data;
+      } else {
+        el.textContent = JSON.stringify(data, null, 2);
+      }
+      el.classList.remove('empty');
+    };
 
-      $('btnHealth').onclick = async () => {
-        const r = await fetch(base + '/health');
-        $('outHealth').textContent = await r.text();
-      };
-
-      $('btnStart').onclick = async () => {
+    // Start Intake
+    $('btnStart').onclick = async () => {
+      try {
         const r = await fetch(base + '/intake/start', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
         const j = await r.json();
-        $('outStart').textContent = JSON.stringify(j, null, 2);
-        $('sessionId').value = j.sessionId;
-        $('clientId').value = j.clientId;
-      };
+        output('outStart', j);
+        $('sessionId').value = j.sessionId || '';
+        $('clientId').value = j.clientId || '';
+        show('intakeStatus', '✓ Intake session started!', 'success');
+      } catch (e) {
+        show('intakeStatus', `✗ Error: ${e.message}`, 'error');
+      }
+    };
 
-      $('btnRespond').onclick = async () => {
-        const r = await fetch(base + '/intake/respond', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sessionId: $('sessionId').value, answer: $('answer').value }) });
-        $('outRespond').textContent = JSON.stringify(await r.json(), null, 2);
-      };
+    // Respond to Question
+    $('btnRespond').onclick = async () => {
+      try {
+        const r = await fetch(base + '/intake/respond', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ sessionId: $('sessionId').value, answer: $('answer').value })
+        });
+        const j = await r.json();
+        output('outRespond', j);
+        $('answer').value = '';
+      } catch (e) {
+        show('intakeStatus', `✗ Error: ${e.message}`, 'error');
+      }
+    };
 
-      $('btnGenChecklist').onclick = async () => {
+    // Generate Checklist
+    $('btnGenChecklist').onclick = async () => {
+      try {
         const r = await fetch(base + `/client/${$('clientId').value}/checklist/generate`, { method: 'POST' });
-        $('outChecklist').textContent = await r.text();
-      };
+        const text = await r.text();
+        output('outChecklist', text);
+        show('checklistStatus', '✓ Checklist generated!', 'success');
+      } catch (e) {
+        show('checklistStatus', `✗ Error: ${e.message}`, 'error');
+      }
+    };
 
-      $('btnSse').onclick = async () => {
+    // Route Client
+    $('btnRoute').onclick = async () => {
+      try {
+        const r = await fetch(base + `/client/${$('clientId').value}/route`, { method: 'POST' });
+        const j = await r.json();
+        output('outRoute', j);
+        show('routeStatus', '✓ Routing complete!', 'success');
+      } catch (e) {
+        show('routeStatus', `✗ Error: ${e.message}`, 'error');
+      }
+    };
+
+    // Create Reminders
+    $('btnReminders').onclick = async () => {
+      try {
+        const r = await fetch(base + `/client/${$('clientId').value}/reminders/documents`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ appointmentId: $('appointmentId').value })
+        });
+        const text = await r.text();
+        output('outReminders', text);
+        show('remindersStatus', '✓ Reminders created!', 'success');
+      } catch (e) {
+        show('remindersStatus', `✗ Error: ${e.message}`, 'error');
+      }
+    };
+
+    // Health Check
+    $('btnHealth').onclick = async () => {
+      try {
+        const r = await fetch(base + '/health');
+        const j = await r.json();
+        output('outHealth', j);
+      } catch (e) {
+        output('outHealth', `Error: ${e.message}`);
+      }
+    };
+
+    // SSE Connection
+    let sse = null;
+    $('btnSse').onclick = async () => {
+      try {
         const out = $('outSse');
-        const es = new EventSource(base + '/sse');
-        es.addEventListener('ready', (e) => { out.textContent += `READY: ${e.data}\n`; });
-        es.addEventListener('ping', (e) => { out.textContent += `PING: ${e.data}\n`; });
-        es.onerror = (e) => { out.textContent += `ERROR\n`; };
-      };
-    </script>
-  </body>
+        out.textContent = 'Connecting to SSE stream...\n';
+        out.classList.remove('empty');
+        sse = new EventSource(base + '/sse');
+        sse.addEventListener('ready', (e) => { out.textContent += `[READY] ${e.data}\n`; });
+        sse.addEventListener('ping', (e) => { out.textContent += `[PING] ${new Date().toLocaleTimeString()}\n`; });
+        sse.onerror = (e) => {
+          out.textContent += `[ERROR] Connection closed\n`;
+          $('btnSse').style.display = 'block';
+          $('btnStopSse').style.display = 'none';
+        };
+        $('btnSse').style.display = 'none';
+        $('btnStopSse').style.display = 'block';
+      } catch (e) {
+        output('outSse', `Error: ${e.message}`);
+      }
+    };
+
+    $('btnStopSse').onclick = () => {
+      if (sse) {
+        sse.close();
+        sse = null;
+      }
+      $('btnSse').style.display = 'block';
+      $('btnStopSse').style.display = 'none';
+      $('outSse').textContent += '\n[CLOSED] Connection stopped by user\n';
+    };
+
+    // Update base URL display
+    $('baseUrl').textContent = window.location.origin;
+  </script>
+</body>
 </html>
